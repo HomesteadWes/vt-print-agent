@@ -33,15 +33,17 @@ The job payload includes a `document_url` the agent fetches to get the PDF.
 
 ## Windows — first-run installer
 
-Just run `vt-print-agent-windows-amd64.exe` from the per-user folder you want it
-installed in. On first launch it:
+Just run `vt-print-agent-windows-amd64.exe` from wherever you downloaded it. On
+first launch it **installs itself to `%AppData%\VulcanTunes\PrintAgent`**:
 
-1. **prompts for the back-office URL** (defaults to production) and the **agent key**,
-2. writes `config.json` **next to the exe** (self-contained/portable),
-3. **downloads SumatraPDF** into that same folder (for silent label printing),
-4. **registers autostart** so it launches at login.
+1. copies the exe into that folder,
+2. prompts for the **back-office URL** (defaults to production) and the **agent key**,
+3. writes `config.json` and **downloads SumatraPDF** into that same folder,
+4. **registers autostart** pointing at the installed copy,
+5. relaunches from there and exits — you can delete the downloaded copy.
 
-After that it lives in the tray. No manual file editing, no separate downloads.
+After that it lives in the tray and starts at login. No files are left in your
+Downloads folder, and nothing needs editing by hand.
 
 ## Config (other platforms / manual)
 

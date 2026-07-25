@@ -16,11 +16,17 @@ func defaultConfigPath() string {
 	return "config.json"
 }
 
-// installDir is where the exe lives — the target install location (config +
-// SumatraPDF go here).
-func installDir() string {
-	if exe, err := os.Executable(); err == nil {
-		return filepath.Dir(exe)
+// appDataInstallDir is the per-user install location: %AppData%\VulcanTunes\PrintAgent.
+// The agent copies itself here on first run and keeps config + SumatraPDF alongside.
+func appDataInstallDir() string {
+	base := os.Getenv("APPDATA")
+	if base == "" {
+		if d, err := os.UserConfigDir(); err == nil {
+			base = d
+		}
 	}
-	return "."
+	if base == "" {
+		base = "."
+	}
+	return filepath.Join(base, "VulcanTunes", "PrintAgent")
 }
