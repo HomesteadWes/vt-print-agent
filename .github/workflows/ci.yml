@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      # Sanity cross-build for the primary target (Windows, pure Go).
+      - run: CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o /dev/null .

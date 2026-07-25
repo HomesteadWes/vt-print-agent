@@ -1,0 +1,77 @@
+name: release
+
+# Tag a commit (e.g. `git tag v0.1.0 && git push origin v0.1.0`) to build the
+# binaries and publish them as a GitHub Release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      # Pure-Go on Windows (no cgo) → cross-compiles from Linux. -H=windowsgui
+      # runs it as a tray app with no console window.
+      - name: Build Windows amd64
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
+            go build -ldflags "-H=windowsgui -X main.version=${GITHUB_REF_NAME}" \
+            -o dist/vt-print-agent-windows-amd64.exe .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+
+  macos:
+    strategy:
+      matrix:
+        include:
+          - runner: macos-14   # Apple Silicon
+            arch: arm64
+          - runner: macos-13   # Intel
+            arch: amd64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      # macOS tray needs cgo (Cocoa); build natively on each arch's runner.
+      - name: Build macOS ${{ matrix.arch }}
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.arch }} \
+            go build -ldflags "-X main.version=${GITHUB_REF_NAME}" \
+            -o vt-print-agent .
+          tar czf dist/vt-print-agent-darwin-${{ matrix.arch }}.tar.gz vt-print-agent
+      - uses: actions/upload-artifact@v4
+        with:
+          name: darwin-${{ matrix.arch }}
+          path: dist/*
+
+  release:
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+
+# Code signing (Windows Authenticode / Apple notarization) is not wired up yet —
+# the binaries are unsigned, so users get a SmartScreen / Gatekeeper prompt on
+# first run. Add signing steps here once certs are available in repo secrets.
