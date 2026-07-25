@@ -7,12 +7,11 @@ import (
 	"strings"
 )
 
-// enumeratePrinters lists CUPS printers via lpstat (macOS / Linux).
+// enumeratePrinters lists CUPS printers via lpstat (macOS / Linux). lpstat exits
+// non-zero when there are simply no printers configured, so we parse whatever it
+// prints and treat an empty result as "no printers", not an error.
 func enumeratePrinters() ([]Printer, error) {
-	out, err := exec.Command("lpstat", "-a").Output()
-	if err != nil {
-		return nil, err
-	}
+	out, _ := exec.Command("lpstat", "-a").Output()
 	var printers []Printer
 	for _, line := range strings.Split(string(out), "\n") {
 		fields := strings.Fields(line)
