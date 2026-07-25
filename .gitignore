@@ -14,3 +14,7 @@ config.json
 
 # OS
 .DS_Store
+
+# Release archives (built locally / in CI)
+*.tar.gz
+vt-print-agent-*
