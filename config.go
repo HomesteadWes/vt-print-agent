@@ -19,9 +19,15 @@ type Config struct {
 	SumatraPath string `json:"sumatra_path,omitempty"`
 }
 
+// Known back-office environments (the tray offers a one-click toggle).
+const (
+	prodURL = "https://www.vulcantunes.com"
+	devURL  = "https://dev.vulcantunes.com"
+)
+
 func defaultConfig() *Config {
 	return &Config{
-		BaseURL:     "https://www.vulcantunes.com",
+		BaseURL:     prodURL,
 		PollSeconds: 15,
 		SumatraPath: "SumatraPDF.exe",
 	}
@@ -60,15 +66,6 @@ func (a *Agent) setServer(url string) error {
 	c := *a.cfg
 	a.mu.Unlock()
 	return saveConfig(a.path, &c)
-}
-
-// defaultConfigPath returns the OS-appropriate config file location.
-func defaultConfigPath() string {
-	dir, err := os.UserConfigDir()
-	if err != nil || dir == "" {
-		dir = "."
-	}
-	return filepath.Join(dir, "vt-print-agent", "config.json")
 }
 
 func loadConfig(path string) (*Config, error) {

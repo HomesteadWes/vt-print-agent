@@ -26,26 +26,35 @@ The job payload includes a `document_url` the agent fetches to get the PDF.
 
 ## Provisioning
 
-1. In the back office: **System → Printers → Agents → New agent**, pick the
+1. In the back office: **System → Print Agents → New agent**, pick the
    warehouse/location. It shows a **device key once** — copy it.
-2. Put the key + base URL in the agent config (see below), then start the agent.
-   Its printers appear in the back office after the first heartbeat; set each
-   printer's **role** (label / document) and the default there.
+2. Run the agent (below). Its printers appear in the back office after the first
+   heartbeat; set each printer's **role** (label / document) and the default there.
 
-## Config
+## Windows — first-run installer
 
-**Easiest:** run the agent, then in its **tray menu → “Paste agent key from
-clipboard”** (after copying the device key from the back office). No file editing.
-The tray can also set the server URL from the clipboard and open the config folder.
+Just run `vt-print-agent-windows-amd64.exe` from the per-user folder you want it
+installed in. On first launch it:
 
-Otherwise, edit the JSON directly — at the OS config dir (`%AppData%\vt-print-agent\config.json` on Windows,
-`~/.config/vt-print-agent/config.json` on Linux, `~/Library/Application
-Support/vt-print-agent/config.json` on macOS), or pass `--config <path>`. A
-template is written on first run:
+1. **prompts for the back-office URL** (defaults to production) and the **agent key**,
+2. writes `config.json` **next to the exe** (self-contained/portable),
+3. **downloads SumatraPDF** into that same folder (for silent label printing),
+4. **registers autostart** so it launches at login.
+
+After that it lives in the tray. No manual file editing, no separate downloads.
+
+## Config (other platforms / manual)
+
+- **Tray:** run the agent, then **“Paste agent key from clipboard”** (after copying
+  the key). The tray also has **Use production / Use dev**, **Paste server URL**,
+  **Start at login** (Windows), and **Open config folder**.
+- **JSON:** edit `config.json` directly. On Windows it sits next to the exe; on
+  macOS `~/Library/Application Support/vt-print-agent/config.json`; on Linux
+  `~/.config/vt-print-agent/config.json`. Or pass `--config <path>`.
 
 ```json
 {
-  "base_url": "https://dev.vulcantunes.com",
+  "base_url": "https://www.vulcantunes.com",
   "agent_key": "",
   "location": "",
   "active_user": "",

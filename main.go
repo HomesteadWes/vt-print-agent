@@ -12,13 +12,9 @@ func main() {
 
 	cfg, err := loadConfig(*cfgPath)
 	if err != nil {
-		// First run (or unreadable): drop a template the operator can fill in.
-		cfg = defaultConfig()
-		if serr := saveConfig(*cfgPath, cfg); serr == nil {
-			log.Printf("wrote template config to %s — set base_url + agent_key, then restart", *cfgPath)
-		} else {
-			log.Printf("could not read or create config at %s: %v", *cfgPath, err)
-		}
+		// First run: on Windows this prompts for server + key, downloads SumatraPDF,
+		// and registers autostart; elsewhere it writes a template.
+		cfg = firstRun(*cfgPath)
 	}
 	logToFile(*cfgPath)
 	log.Printf("vt-print-agent %s starting (base_url=%s)", version, cfg.BaseURL)
