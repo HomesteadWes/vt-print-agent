@@ -1,0 +1,16 @@
+# Binaries
+/vt-print-agent
+/vt-print-agent.exe
+/dist/
+*.exe
+*.syso
+
+# Bundled tools (ship separately)
+SumatraPDF.exe
+
+# Local config / logs
+config.json
+*.log
+
+# OS
+.DS_Store
