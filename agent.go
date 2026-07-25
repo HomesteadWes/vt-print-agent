@@ -12,17 +12,20 @@ import (
 var version = "0.1.0-dev"
 
 // runAgent is the main loop: enumerate printers → heartbeat → poll → print. It
-// pushes short status strings onto statusCh for the tray to display.
-func runAgent(cfg *Config, statusCh chan<- string) {
-	if cfg.AgentKey == "" {
-		setStatus(statusCh, "Not configured — set agent_key")
-		log.Printf("no agent_key configured; edit the config and restart")
-		return
-	}
-	client := newClient(cfg.BaseURL, cfg.AgentKey)
-	poll := time.Duration(cfg.PollSeconds) * time.Second
-
+// re-reads the live config each pass so a key/server pasted in the tray takes
+// effect without a restart, and pushes short status strings to the tray.
+func runAgent(a *Agent, statusCh chan<- string) {
 	for {
+		cfg := a.snapshot()
+		poll := time.Duration(cfg.PollSeconds) * time.Second
+
+		if cfg.AgentKey == "" {
+			setStatus(statusCh, "Not configured — paste your agent key")
+			time.Sleep(3 * time.Second)
+			continue
+		}
+		client := newClient(cfg.BaseURL, cfg.AgentKey)
+
 		printers, err := enumeratePrinters()
 		if err != nil {
 			log.Printf("enumerate printers: %v", err)
@@ -46,7 +49,7 @@ func runAgent(cfg *Config, statusCh chan<- string) {
 			setStatus(statusCh, fmt.Sprintf("Online · %d printer(s)", len(printers)))
 		}
 		for _, j := range jobs {
-			processJob(client, cfg, statusCh, j)
+			processJob(client, &cfg, statusCh, j)
 		}
 
 		time.Sleep(poll)

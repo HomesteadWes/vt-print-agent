@@ -34,7 +34,11 @@ The job payload includes a `document_url` the agent fetches to get the PDF.
 
 ## Config
 
-JSON at the OS config dir (`%AppData%\vt-print-agent\config.json` on Windows,
+**Easiest:** run the agent, then in its **tray menu → “Paste agent key from
+clipboard”** (after copying the device key from the back office). No file editing.
+The tray can also set the server URL from the clipboard and open the config folder.
+
+Otherwise, edit the JSON directly — at the OS config dir (`%AppData%\vt-print-agent\config.json` on Windows,
 `~/.config/vt-print-agent/config.json` on Linux, `~/Library/Application
 Support/vt-print-agent/config.json` on macOS), or pass `--config <path>`. A
 template is written on first run:

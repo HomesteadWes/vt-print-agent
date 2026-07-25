@@ -31,30 +31,25 @@ jobs:
           path: dist/*
 
   macos:
-    strategy:
-      matrix:
-        include:
-          - runner: macos-14   # Apple Silicon
-            arch: arm64
-          - runner: macos-13   # Intel
-            arch: amd64
-    runs-on: ${{ matrix.runner }}
+    # Apple Silicon only — warehouse PCs are Windows and dev Macs are arm64.
+    # Intel Macs can build from source.
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      # macOS tray needs cgo (Cocoa); build natively on each arch's runner.
-      - name: Build macOS ${{ matrix.arch }}
+      # macOS tray needs cgo (Cocoa); build natively on the arm64 runner.
+      - name: Build macOS arm64
         run: |
           mkdir -p dist
-          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.arch }} \
+          CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 \
             go build -ldflags "-X main.version=${GITHUB_REF_NAME}" \
             -o vt-print-agent .
-          tar czf dist/vt-print-agent-darwin-${{ matrix.arch }}.tar.gz vt-print-agent
+          tar czf dist/vt-print-agent-darwin-arm64.tar.gz vt-print-agent
       - uses: actions/upload-artifact@v4
         with:
-          name: darwin-${{ matrix.arch }}
+          name: darwin-arm64
           path: dist/*
 
   release:

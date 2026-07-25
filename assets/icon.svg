@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Label emerging from the top of the printer, carrying the VulcanTunes green V -->
+  <rect x="158" y="36" width="196" height="182" rx="14" fill="#ffffff" stroke="#141414" stroke-width="14"/>
+  <path d="M200 76 L256 188 L312 76" fill="none" stroke="#2fbf4f" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Printer body -->
+  <rect x="64" y="196" width="384" height="196" rx="30" fill="#f4f6f7" stroke="#141414" stroke-width="16"/>
+
+  <!-- Zebra stripes (clipped to the body) -->
+  <clipPath id="body"><rect x="64" y="196" width="384" height="196" rx="30"/></clipPath>
+  <g clip-path="url(#body)" fill="#141414">
+    <polygon points="102,196 146,196 108,392 64,392"/>
+    <polygon points="196,196 240,196 202,392 158,392"/>
+    <polygon points="300,196 344,196 306,392 262,392"/>
+    <polygon points="404,196 448,196 410,392 366,392"/>
+  </g>
+
+  <!-- Output slot on the front -->
+  <rect x="122" y="300" width="268" height="30" rx="9" fill="#ffffff" stroke="#141414" stroke-width="10"/>
+
+  <!-- Status light (green = connected) -->
+  <circle cx="410" cy="242" r="13" fill="#2fbf4f" stroke="#141414" stroke-width="6"/>
+
+  <!-- Feet -->
+  <rect x="98" y="392" width="46" height="26" rx="7" fill="#141414"/>
+  <rect x="368" y="392" width="46" height="26" rx="7" fill="#141414"/>
+</svg>

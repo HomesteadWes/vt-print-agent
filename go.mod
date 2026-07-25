@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/alexbrainman/printer v0.0.0-20200912035444-f40f26f0bdeb
+	github.com/atotto/clipboard v0.1.4
 	github.com/getlantern/systray v1.2.2
 )
 

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
+	"sync"
 )
 
 // Config is the agent's on-disk settings. base_url + agent_key are required; the
@@ -19,10 +21,45 @@ type Config struct {
 
 func defaultConfig() *Config {
 	return &Config{
-		BaseURL:     "https://dev.vulcantunes.com",
+		BaseURL:     "https://www.vulcantunes.com",
 		PollSeconds: 15,
 		SumatraPath: "SumatraPDF.exe",
 	}
+}
+
+// Agent holds the live config behind a lock so the tray can update it (e.g. paste
+// a key) while the run loop reads it. Changes are saved to disk immediately.
+type Agent struct {
+	mu   sync.RWMutex
+	cfg  *Config
+	path string
+}
+
+func newAgent(cfg *Config, path string) *Agent { return &Agent{cfg: cfg, path: path} }
+
+// snapshot returns a copy of the current config for the run loop.
+func (a *Agent) snapshot() Config {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return *a.cfg
+}
+
+func (a *Agent) configDir() string { return filepath.Dir(a.path) }
+
+func (a *Agent) setKey(key string) error {
+	a.mu.Lock()
+	a.cfg.AgentKey = strings.TrimSpace(key)
+	c := *a.cfg
+	a.mu.Unlock()
+	return saveConfig(a.path, &c)
+}
+
+func (a *Agent) setServer(url string) error {
+	a.mu.Lock()
+	a.cfg.BaseURL = strings.TrimRight(strings.TrimSpace(url), "/")
+	c := *a.cfg
+	a.mu.Unlock()
+	return saveConfig(a.path, &c)
 }
 
 // defaultConfigPath returns the OS-appropriate config file location.

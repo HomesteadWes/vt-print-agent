@@ -23,11 +23,12 @@ func main() {
 	logToFile(*cfgPath)
 	log.Printf("vt-print-agent %s starting (base_url=%s)", version, cfg.BaseURL)
 
+	agent := newAgent(cfg, *cfgPath)
 	statusCh := make(chan string, 8)
-	go runAgent(cfg, statusCh)
+	go runAgent(agent, statusCh)
 
 	if *noTray {
 		select {} // block forever; the agent loop runs in its goroutine
 	}
-	runTray(cfg, statusCh)
+	runTray(agent, statusCh)
 }
