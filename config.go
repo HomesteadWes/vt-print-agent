@@ -17,6 +17,10 @@ type Config struct {
 	ActiveUser  string `json:"active_user"`
 	PollSeconds int    `json:"poll_seconds"`
 	SumatraPath string `json:"sumatra_path,omitempty"`
+	// PrintSettings overrides the SumatraPDF scaling token per install (e.g.
+	// "noscale" if a Zebra driver is set to exactly 4x6). Empty = auto: labels
+	// use "fit" (scales to the driver's label stock), other docs use "noscale".
+	PrintSettings string `json:"print_settings,omitempty"`
 }
 
 // Known back-office environments (the tray offers a one-click toggle).

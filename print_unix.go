@@ -9,8 +9,9 @@ import (
 )
 
 // printPDF prints a PDF via CUPS (macOS / Linux). fit-to-page=false keeps label
-// stock at its native size.
-func printPDF(cfg *Config, printerName, pdfPath string, copies int) error {
+// stock at its native size. documentType is accepted for signature parity with
+// the Windows path (CUPS handles label sizing via the printer's default media).
+func printPDF(cfg *Config, printerName, pdfPath string, copies int, documentType string) error {
 	if copies < 1 {
 		copies = 1
 	}

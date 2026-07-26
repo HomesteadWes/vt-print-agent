@@ -79,7 +79,7 @@ func processJob(client *Client, cfg *Config, statusCh chan<- string, j Job) {
 	}
 	defer os.Remove(tmp)
 
-	if err := printPDF(cfg, j.Printer, tmp, j.Copies); err != nil {
+	if err := printPDF(cfg, j.Printer, tmp, j.Copies, j.DocumentType); err != nil {
 		reportFail(client, j.ID, "print: "+err.Error())
 		return
 	}
